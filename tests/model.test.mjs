@@ -1,0 +1,17 @@
+import assert from 'node:assert/strict';
+import {spots,conditions,assess,angle,at} from '../dist/model.js';
+const now=Date.now(),base={height:.6,swell:.5,period:10,direction:270,wind:3,windDirection:90,day:1,tide:1,fetched:now};
+assert.equal(assess(spots[0],base,'beginner','foam',now).rank,2);
+assert.equal(assess(spots[0],{...base,period:16},'beginner','foam',now).rank,0);
+assert.equal(assess(spots[2],{...base,tide:.2},'advanced','fish',now).rank,0);
+for(const key of ['height','swell','period','direction','wind','windDirection','tide','day'])assert.equal(assess(spots[0],{...base,[key]:null},'advanced','fish',now).rank,-1,key);
+assert.equal(assess(spots[0],{...base,fetched:now-31*60e3},'advanced','fish',now).rank,-1);
+assert.equal(assess(spots[0],{...base,day:0},'advanced','fish',now).rank,0);
+assert.equal(assess(spots[0],{...base,wind:22},'advanced','fish',now).rank,0);
+assert.equal(at({time:[100],wave_height:[null]},100,'wave_height'),null);
+assert.equal(at({time:[100],wave_height:[0]},100,'wave_height'),0);
+assert.equal(at({time:[100],wave_height:[1]},200,'wave_height'),null);
+assert.equal(angle(355,5),10);
+const d={marine:{hourly:{time:[100],wave_height:[1]}},weather:{hourly:{time:[100],is_day:[1]}},tides:[{time:100,value:0}],fetched:now};
+assert.equal(conditions(d,100).tide,0);assert.equal(conditions(d,200).tide,null);
+console.log('Passed: skill, period, rocky low tide, night, wind, stale/missing data, zero values, exact timestamp matching, direction wrap.');
