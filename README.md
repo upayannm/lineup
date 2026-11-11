@@ -55,10 +55,23 @@ The app defaults to a 75 kg example rider; volume, shape, fitness, and individua
 
 Search beach names and coastal towns using Photon/OpenStreetMap, or enter latitude, longitude for an unindexed beach. Results distinguish actual beach features from places and exclude businesses. Search is submitted explicitly and cached in memory to limit use of the public Photon service; use a dedicated geocoder for production traffic.
 
-Searched locations show offshore marine and wind forecasts in the location’s time zone. They do not receive personalized suitability, board-fit, bottom-type, or tide-window claims. Tide predictions remain available only for curated SoCal spots. Use the map link to verify the exact point. Marine cells more than 35 km from the selected point are withheld; this distance filter is not proof of coastal location or surfability.
+Searched locations show offshore marine and wind forecasts in the location’s time zone. Selections now trigger local evidence lookup and conditional personalized advice. Rockaway (NY), Swami’s Beach and Tourmaline have dated researched profiles with source links, per-fact confidence, and NOAA regional tide references. Other locations use automatic public-source evidence with low confidence and no positive beginner session recommendation. Use the map link to verify the exact point. Marine cells more than 35 km from the selected point are withheld; this distance filter is not proof of coastal location or surfability.
 
 - `dist/world.js`: search and worldwide forecast interface, request cancellation, caching and partial-data handling
 - `dist/search-model.js`: result filtering, coordinate validation, HTML escaping, and marine-grid distance checks
 - `tests/search.test.mjs`: search normalization, escaping, coordinate and distance validation
 
 Search attribution: [Photon by komoot](https://photon.komoot.io) and [OpenStreetMap contributors](https://www.openstreetmap.org/copyright). Public service availability is not guaranteed. No location permission is requested; only the query/coordinates the visitor submits are sent to providers.
+
+## On-demand local evidence
+
+`profile-service.js` queries the selected OpenStreetMap feature and Wikipedia near the selected coordinates. Article matching requires a matching name and coordinates within 1.5 km. This is a limited public-data lookup, not an exhaustive web-search or LLM research service. Only narrowly recognized surf context influences conditional board advice; map surface is never treated as surf-zone bottom. Missing evidence remains unknown.
+
+`profiles/catalog.js` contains researched facts for the three starter beaches, with source attribution and research date 2026-11-11. Live refresh retrieves public records; it does not automatically re-verify the dated official/operator claims. NOAA predictions use Sandy Hook (8531680) for Rockaway and La Jolla (9410230) for the two San Diego County beaches, explicitly marked regional references.
+
+`profile-model.js` separates facts from interpretation. Fact confidence (High/Medium/Low/Unknown) describes evidence quality, not safety. Recommendation confidence is capped at Moderate and falls to Low for unknown bottom, missing tides, long periods or automatic-only profiles. Rules are unvalidated; tide windows and surf-zone depth are not inferred. Board advice uses the chosen experience and example board and remains conditional on actual wave shape.
+
+Evidence is cached in browser localStorage for 24 hours, with a force-refresh button. Failed refreshes are shown and do not overwrite saved successful evidence. Requests are cancelled when switching locations. Public source availability and coverage vary. Wikipedia excerpts are attributed to contributors under CC BY-SA; OpenStreetMap records are attributed to contributors under ODbL.
+
+`tests/profile.test.mjs` covers geographic matching (including Rockaway NY vs Oregon), fact/recommendation gates, board changes, stale/missing forecasts, request/caching behavior, failures and cancellation.
+
