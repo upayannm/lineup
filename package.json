@@ -3,10 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Personalized Southern California surf forecast prototype",
+  "description": "Worldwide beach search and personalized curated surf forecasts",
   "scripts": {
-    "test": "node tests/model.test.mjs",
-    "check": "node --check dist/live.js && node --check dist/model.js",
+    "test": "node tests/model.test.mjs && node tests/search.test.mjs",
+    "check": "node --check dist/live.js && node --check dist/model.js && node --check dist/world.js && node --check dist/search-model.js",
     "dev": "python3 -m http.server 8765 --directory dist"
   },
   "engines": {

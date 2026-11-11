@@ -50,3 +50,15 @@ This is an experimental decision-support prototype, not a validated surf-safety 
 Recommendation thresholds and board advice are explicit heuristics, not universal safety limits. Surf-zone bathymetry, swell shadowing, sandbar changes, current hazards, closures, water quality, and crowds are not automatically resolved. Validate recommendations with local surf coaches and observations before relying on them for real sessions.
 
 The app defaults to a 75 kg example rider; volume, shape, fitness, and individual ability require further personalization. No analytics, user accounts, or backend are included.
+
+## Worldwide beach search
+
+Search beach names and coastal towns using Photon/OpenStreetMap, or enter latitude, longitude for an unindexed beach. Results distinguish actual beach features from places and exclude businesses. Search is submitted explicitly and cached in memory to limit use of the public Photon service; use a dedicated geocoder for production traffic.
+
+Searched locations show offshore marine and wind forecasts in the location’s time zone. They do not receive personalized suitability, board-fit, bottom-type, or tide-window claims. Tide predictions remain available only for curated SoCal spots. Use the map link to verify the exact point. Marine cells more than 35 km from the selected point are withheld; this distance filter is not proof of coastal location or surfability.
+
+- `dist/world.js`: search and worldwide forecast interface, request cancellation, caching and partial-data handling
+- `dist/search-model.js`: result filtering, coordinate validation, HTML escaping, and marine-grid distance checks
+- `tests/search.test.mjs`: search normalization, escaping, coordinate and distance validation
+
+Search attribution: [Photon by komoot](https://photon.komoot.io) and [OpenStreetMap contributors](https://www.openstreetmap.org/copyright). Public service availability is not guaranteed. No location permission is requested; only the query/coordinates the visitor submits are sent to providers.

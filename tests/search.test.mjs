@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import {escapeHTML,parseCoordinates,normalizeResults,gridUsable,distanceKm} from '../dist/search-model.js';
+assert.deepEqual(parseCoordinates('-33.8923, 151.2753'),{lat:-33.8923,lon:151.2753});
+assert.equal(parseCoordinates('91, 0'),null);assert.equal(parseCoordinates('0,181'),null);assert.equal(parseCoordinates('Bondi Beach'),null);
+assert.equal(escapeHTML('<img onerror="x">'), '&lt;img onerror=&quot;x&quot;&gt;');
+const f=(id,key,value,xy=[151,-33])=>({properties:{osm_id:id,osm_type:'W',osm_key:key,osm_value:value,name:'Test'},geometry:{coordinates:xy}});
+const r=normalizeResults({features:[f(1,'amenity','restaurant'),f(2,'place','town'),f(3,'natural','beach'),f(3,'natural','beach'),f(4,'natural','beach',[999,100])]});
+assert.equal(r.length,2);assert.equal(r[0].kind,'Beach');assert.equal(r[1].beach,false);
+assert.equal(gridUsable({lat:0,lon:0},{latitude:0,longitude:3}),false);
+assert.equal(gridUsable({lat:0,lon:0},{latitude:0,longitude:.1}),true);
+assert.equal(gridUsable({lat:0,lon:0},null),false);
+assert.ok(distanceKm({lat:0,lon:179.9},{lat:0,lon:-179.9})<25);
+console.log('Passed: coordinate validation, HTML escaping, place filtering, beach priority, deduplication, distant marine grid rejection, dateline distance.');
